@@ -86,8 +86,10 @@ while 1:
     if ball.hit_buttom == False:
         ball.draw()
         paddle.draw()
+    if ball.hit_buttom == True:
+        break
     tk.update_idletasks()
     tk.update()
     time.sleep(0.01)
-
+canvas.create_text(200, 350, fill="darkblue", text=" Game Over", font=("ArialBlack", 36))
 tk.mainloop()
