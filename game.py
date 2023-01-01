@@ -3,6 +3,11 @@ from tkinter import messagebox
 import random
 import time
 
+tk = Tk()
+count = 0
+window = Toplevel(tk)
+txt = Label(window, text=count)
+
 
 def on_closing():
     if messagebox.askokcancel("Exit", "Do you want to exit?"):
@@ -21,12 +26,19 @@ class Ball:
         self.y = -1
         self.canvas_height = self.canvas.winfo_height()
         self.canvas_width = self.canvas.winfo_width()
-        self.hit_buttom = False
+        self.hit_bottom = False
 
     def hit_paddle(self, pos):
+        global count
+        global txt
+        global window
         paddle_pos = self.canvas.coords(self.paddle.id)
         if pos[2] >= paddle_pos[0] and pos[0] <= paddle_pos[2]:
-            if pos[3] >= paddle_pos[1] and pos[3] <= paddle_pos[3]:
+            if paddle_pos[1] <= pos[3] <= paddle_pos[3]:
+                count += 1
+                txt.destroy()
+                txt = Label(window, text=count)
+                txt.pack()
                 return True
         return False
 
@@ -36,8 +48,8 @@ class Ball:
         if pos[1] <= 0:
             self.y = 1
         if pos[3] >= self.canvas_height:
-            self.hit_buttom = True
-        if self.hit_paddle(pos) == True:
+            self.hit_bottom = True
+        if self.hit_paddle(pos):
             self.y = -1
         if pos[0] <= 0:
             self.x = 1
@@ -70,7 +82,6 @@ class Paddle:
         self.x = 2
 
 
-tk = Tk()
 tk.protocol("WM_DELETE_WINDOW", on_closing)
 tk.title("The game")
 tk.resizable(0, 0)
@@ -83,13 +94,11 @@ paddle = Paddle(canvas, 'blue')
 ball = Ball(canvas, paddle, 'red')
 
 while 1:
-    if ball.hit_buttom == False:
+    if not ball.hit_bottom:
         ball.draw()
         paddle.draw()
-    if ball.hit_buttom == True:
-        break
+    else:
+        on_closing()
     tk.update_idletasks()
     tk.update()
     time.sleep(0.01)
-canvas.create_text(200, 350, fill="darkblue", text=" Game Over", font=("ArialBlack", 36))
-tk.mainloop()
